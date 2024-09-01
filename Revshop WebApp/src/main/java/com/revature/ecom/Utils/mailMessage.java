@@ -2,60 +2,62 @@ package com.revature.ecom.Utils;
 
 public class mailMessage {
 
-	public static void successfullyRegister(String userName, String userEmail) {
+    public static void successfullyRegister(String userName, String userEmail) {
 
-		String subject = "Welcome to EazyDeals - Successful Registration!";
-		String body = "Hi " + userName
-				+ ",<p>Congratulations and a warm welcome to EazyDeals! We are thrilled to have you as a part of our growing community. Thank you for choosing us for your online shopping needs.</p>"
-				+ "<p>Your registration was successful, and we are excited to inform you that you are now a valued member of our platform. With EazyDeals, you'll discover a wide selection of products and exciting deals that cater to your interests and preferences."
-				+ "<p>Once again, welcome aboard! We look forward to serving you and making your shopping experience delightful and rewarding.</p>"
-				+ "<p>Happy shopping!</p>";
-		try {
-			mail.sendMail(userEmail, subject, body);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        String subject = "Welcome to RevShop - Registration Successful!";
+        String body = "Hello " + userName + ","
+                + "<p>We're excited to welcome you to RevShop! Your registration was successful, and we're thrilled to have you join our community of shoppers.</p>"
+                + "<p>At RevShop, you'll find a wide range of products and fantastic deals tailored just for you. Thank you for choosing us for your shopping needs.</p>"
+                + "<p>We look forward to providing you with an exceptional shopping experience. Happy shopping!</p>"
+                + "<p>Best regards,<br>The RevShop Team</p>";
+        try {
+            mail.sendMail(userEmail, subject, body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void successfullyOrderPlaced(String userName, String userEmail, String orderId, String OrderDate) {
-		String subject = "Order Confirmation - Your Product is on its way!";
-		String body = "Hi " + userName
-				+ ",<p>We are delighted to inform you that your order has been successfully placed and is now being processed. Thank you for choosing EazyDeals for your shopping needs!</p>"
-				+ "<p>Order Details: <br>" + "Order Number: " + orderId + "<br>Order Date: " + OrderDate + "</p>"
-				+ "<p>Please note that your order is currently being prepared for shipment. Our dedicated team is working diligently to ensure that your products are packed securely and dispatched at the earliest.</p>"
-				+ "<p>Once your order is shipped, we will send you another email containing the tracking details, allowing you to monitor its journey until it reaches your doorstep. We understand how exciting it is to receive a package, and we'll do our best to get it to you as soon as possible.</p>"
-				+ "<p>Thank you for shopping with us! Your trust in <b>EazyDeals</b> means a lot to us, and we promise to provide you with an exceptional shopping experience.</p>";
-		try {
-			mail.sendMail(userEmail, subject, body);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public static void successfullyOrderPlaced(String userName, String userEmail, String orderId, String orderDate) {
+        String subject = "Order Confirmation - We're Processing Your Order!";
+        String body = "Hello " + userName + ","
+                + "<p>Thank you for your order! We're happy to inform you that it has been successfully placed and is now being processed.</p>"
+                + "<p>Order Details: <br>Order Number: " + orderId + "<br>Order Date: " + orderDate + "</p>"
+                + "<p>Our team is working hard to prepare your order for shipment. Once it's on its way, we'll send you a tracking number so you can monitor its journey.</p>"
+                + "<p>We appreciate your trust in RevShop and look forward to serving you again soon.</p>"
+                + "<p>Best regards,<br>The RevShop Team</p>";
+        try {
+            mail.sendMail(userEmail, subject, body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void orderShipped(String userName, String userEmail, String orderId, String OrderDate) {
-		String subject = "Your Order is Out for Delivery!";
-		String body = "Hi " + userName
-				+ "<p>Greetings from <b>EazyDeals</b>! We are thrilled to inform you that your order is on its way to you. Your package has been successfully shipped and will soon be at your doorstep!</p>"
-				+ "<p>Order Details: <br>" + "Order Number: " + orderId + "<br>Order Date: " + OrderDate + "</p>"
-				+ "<p>Our dedicated team has carefully processed and packed your order to ensure that it reaches you in perfect condition. As it is out for delivery, our trusted delivery partner is committed to bringing your package to you as swiftly as possible.</p>"
-				+ "<p>Once again, we appreciate your trust in <b>EazyDeals</b> for your shopping needs. We aim to provide you with an outstanding shopping experience, and your satisfaction is our priority.</p>"
-				+ "<p>Thank you for choosing us!</p>";
-		try {
-			mail.sendMail(userEmail, subject, body);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public static void orderShipped(String userName, String userEmail, String orderId, String orderDate) {
+        String subject = "Good News - Your Order is on the Way!";
+        String body = "Hello " + userName + ","
+                + "<p>We're pleased to inform you that your order has been shipped and is now on its way to you!</p>"
+                + "<p>Order Details: <br>Order Number: " + orderId + "<br>Order Date: " + orderDate + "</p>"
+                + "<p>We've carefully packed your order to ensure it arrives in perfect condition. Our delivery partner is working hard to get it to you as quickly as possible.</p>"
+                + "<p>Thank you for shopping with RevShop. We hope you enjoy your purchase!</p>"
+                + "<p>Best regards,<br>The RevShop Team</p>";
+        try {
+            mail.sendMail(userEmail, subject, body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void sendOtp(String userEmail, int code) {
-		String subject = "Verification code for password change";
-		String body = "Hi, " + "<p>Please use the below verification code to reset your password!</p>" + "<h3>" + code
-				+ "</h3>";
-		try {
-			mail.sendMail(userEmail, subject, body);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+    public static void sendOtp(String userEmail, int code) {
+        String subject = "Your Verification Code for Password Reset";
+        String body = "Hello,"
+                + "<p>Use the verification code below to reset your password:</p>"
+                + "<h3>" + code + "</h3>"
+                + "<p>If you did not request a password reset, please contact our support team immediately.</p>"
+                + "<p>Best regards,<br>The RevShop Team</p>";
+        try {
+            mail.sendMail(userEmail, subject, body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
