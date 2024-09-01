@@ -1,0 +1,48 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="ISO-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Login</title>
+    <%@include file="Components/common_css_js.jsp"%>
+    <link rel="stylesheet" href="CSS/styles2.css">
+</head>
+<body>
+    <!--navbar -->
+    <%@include file="Components/navbar.jsp"%>
+
+    <div class="container-fluid">
+        <div class="row mt-5">
+            <div class="col-md-4 offset-md-4">
+                <div class="card">
+                    <div class="card-header px-5 text-center">
+                        
+                        <h3 class="text-center mt-3">Admin Login</h3>
+                        <%@include file="Components/alert_message.jsp"%>
+                    </div>
+                    <div class="card-body px-5">
+                        <!--login-form-->
+                        <form id="login-form" action="login" method="post">
+                            <input type="hidden" name="login" value="admin"> 
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label> 
+                                <input type="email" name="email" placeholder="Email address" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Password</label> 
+                                <input type="password" name="password" placeholder="Enter your password" class="form-control" required>
+                            </div>
+
+                            <div id="login-btn" class="container text-center mt-5">
+                                <button type="submit" class="btn btn-outline-primary me-3">Login</button>
+                            </div>
+                        </form>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

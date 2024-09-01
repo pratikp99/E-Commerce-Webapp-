@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.categoryDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.categoryModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.adminModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.adminDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.cartDAO"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Utils.OrderID"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.orderedProductDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.productDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.cartModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.productModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.orderedProductModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.orderDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Utils.mailMessage"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.orderModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.wishlistDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.wishlistModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.messageModel"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.DAO.userDAO"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Models.userModel"/>
+    <fullyQualifiedTypeName name="jakarta.servlet.http.HttpSession"/>
+    <fullyQualifiedTypeName name="com.revature.ecom.Utils.DatabaseUtil"/>
+</qualifiedTypeNameHistroy>

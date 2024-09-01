@@ -1,0 +1,107 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Find Your Perfect Outfit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="path/to/your/css/styles.css">
+<style>
+    /* Include your CSS styles here */
+</style>
+</head>
+<body>
+    <!-- Include Navbar -->
+    <jsp:include page="Components/navbar.jsp"/>
+
+    <div class="container">
+        <div class="intro-section">
+            <h1 class="header-text">Find your next <span style="color: #a0aec0;">perfect</span> outfit with ease</h1>
+            <p class="sub-text">
+                This is the best place to find your next perfect outfit.
+                <br />
+                We have a wide range of clothing collections for you to choose from.
+            </p>
+            <a href="search.jsp" class="action-link">Let's get started...</a>
+        </div>
+
+        <!-- Swiper Carousel -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <!-- Loop through featured clothing items and display them as slides -->
+                <c:forEach var="item" items="${featuredItems}">
+                    <div class="swiper-slide" style="background: url(${item.imageUrl}) center no-repeat; background-size: cover;">
+                        <!-- Optionally include additional content here -->
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
+
+        <!-- Product Sections -->
+        <div class="section">
+            <c:if test="${not empty offerListings}">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Offers</h2>
+                    <a class="action-link" href="search.jsp?offer=true">Show more offers</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${offerListings}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+
+        <div class="section">
+            <c:if test="${not empty newArrivals}">
+                <div class="section-header">
+                    <h2 class="section-title">New Arrivals</h2>
+                    <a class="action-link" href="search.jsp?type=new">Show more new arrivals</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${newArrivals}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+
+        <div class="section">
+            <c:if test="${not empty bestSellers}">
+                <div class="section-header">
+                    <h2 class="section-title">Best Sellers</h2>
+                    <a class="action-link" href="search.jsp?type=best">Show more best sellers</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${bestSellers}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper('.swiper-container', {
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page import="com.revature.ecom.Models.userModel"%>
+<%@page errorPage="error_exception.jsp"%>
+<%
+userModel activeUser = (userModel) session.getAttribute("activeUser");
+if (activeUser == null) {
+    messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+    session.setAttribute("message", message);
+    response.sendRedirect("login.jsp");
+    return;  
+}
+%>  
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>My Profile</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <%@include file="Components/navbar.jsp"%>
+	<link rel="stylesheet" type="text/css" href="CSS/styles.css">
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="profile-card">
+                <img src="Images/profile.png" class="profile-img" alt="Profile Image">
+                <h2 class="profile-name"><%=activeUser.getUserName()%></h2>
+            </div>
+
+            <nav class="nav-menu">
+                <button type="button" class="nav-btn active" data-section="profile">Profile Information</button>
+                <button type="button" class="nav-btn" data-section="wishlist">My Wishlist</button>
+                <button type="button" class="nav-btn" data-section="order">My Orders</button>
+                <button type="button" class="nav-btn" onclick="window.open('logout?user=user', '_self')">Logout</button>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <div id="profile-section" class="section">
+                <%@include file="Components/alert_message.jsp"%>
+                <%@include file="personalInfo.jsp"%>
+            </div>
+            <div id="wishlist-section" class="section hidden">
+                <%@include file="wishlist.jsp"%>
+            </div>
+            <div id="order-section" class="section hidden">
+                <%@include file="order.jsp"%>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.nav-btn').click(function() {
+                const sectionId = $(this).data('section') + '-section';
+                $('.section').addClass('hidden');
+                $('#' + sectionId).removeClass('hidden');
+
+                $('.nav-btn').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+/* Remove underline from product links */
+.product-link {
+    text-decoration: none; /* Remove default link styling */
+    color: inherit; /* Inherit color from parent element */
+}
+
+/* Ensure consistent styling for product cards */
+.stylish-card {
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.stylish-card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.product-description {
+    font-size: 14px; /* Adjust font size as needed */
+    color: #666; /* Subtle color for description text */
+    margin-top: 10px; /* Space above the description */
+    margin-bottom: 0; /* Remove bottom margin */
+    text-align: center; /* Center align text */
+}
+
+/* Adjustments for featured image box */
+.box-container {
+    border-radius: 10px; /* Rounded corners */
+    background-color: white; /* White background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    overflow: hidden; /* Ensures rounded corners on image */
+    max-width: 100%; /* Responsive width */
+    margin: 0 auto; /* Center the box */
+    transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.box-container:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.box-img {
+    width: 100%; /* Make image fit the box */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Rounded top corners */
+}
+
+/* Product Card */
+.stylish-card {
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.stylish-card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.real-price {
+    font-size: 20px; /* Larger font size for the price */
+    font-weight: 600; /* Bold font weight */
+    color: #333; /* Darker text color */
+}
+
+.product-price {
+    font-size: 17px; /* Font size for the original price */
+    text-decoration: line-through; /* Strike-through for original price */
+    color: #888; /* Gray color for the original price */
+}
+
+.product-discount {
+    font-size: 15px; /* Font size for the discount percentage */
+    color: #027a3e; /* Green color for discount */
+}
+.social-link {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .social-link:hover {
+        color: #17a2b8;
+        text-decoration: underline;
+        transition: color 0.3s ease;
+    }
+
+    .social-link::before {
+        content: '\f0c1'; /* FontAwesome chain icon */
+        font-family: FontAwesome;
+        padding-right: 8px;
+    }
+    .box-container, .card {
+        border: 2px solid #ddd; /* Light gray border */
+        border-radius: 10px; /* Rounded corners */
+        background-color: white; /* Light background color */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        max-width: 320px; /* Set a maximum width for the box */
+        margin: 0 auto; /* Center align the box within the column */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    }
+    
+    .product-link {
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit color from parent element */
+}
+
+.new-arrival-heading {
+    font-size: 24px; /* Adjust the font size */
+    font-weight: bold; /* Make the font bold */
+    color: #333; /* Set the text color */
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin: 20px 0; /* Add vertical margin */
+}
+
+.new-arrival-heading .arrow {
+    margin-left: 10px; /* Space between text and arrow */
+    font-size: 30px; /* Adjust the size of the arrow */
+    color: #027a3e; /* Set the color of the arrow */
+}
+
+    .box-container:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+    }
+
+    .box-img {
+        max-width: 100%; /* Ensure image fits within the box */
+        max-height: 300px; /* Limit the height of the image */
+        width: auto; /* Maintain aspect ratio */
+        border-radius: 10px 10px 0 0; /* Rounded top corners for the image */
+    }
+    
+    .card:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+    }
+.cus-card {
+	border-radius: 50%;
+	border-color: transparent;
+	max-height: 200px;
+	max-width: 200px;
+	max-height: 200px;
+}
+
+.real-price {
+	font-size: 20px !important;
+	font-weight: 600;
+}
+
+.product-price {
+	font-size: 17px !important;
+	text-decoration: line-through;
+}
+
+.product-discount {
+	font-size: 15px !important;
+	color: #027a3e;
+}

@@ -1,0 +1,174 @@
+<%@page import="com.revature.ecom.DAO.wishlistDAO"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+
+<%
+int productId = Integer.parseInt(request.getParameter("pid"));
+productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+productModel product = (productModel) productDao.getProductsByProductId(productId);
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>View Product</title>
+<%@include file="Components/common_css_js.jsp"%>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+    .container {
+        margin-top: 20px;
+    }
+    .product-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    .real-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ff5722;
+    }
+    .product-price {
+        font-size: 1.2rem;
+        text-decoration: line-through;
+        color: #757575;
+    }
+    .product-discount {
+        font-size: 1rem;
+        color: #388e3c;
+        font-weight: bold;
+    }
+    .btn-custom {
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+    .btn-primary-custom {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-info-custom {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+    .carousel-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        max-height: 500px; /* Increase max-height for a larger image display */
+    }
+    .product-details {
+        margin-top: -20px; /* Bring the product details closer to the image */
+    }
+    .reviews-section {
+        margin-top: 30px;
+    }
+    .review-item {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 0;
+    }
+    .btn-disabled {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    .btn-spacing {
+        margin-left: 10px; /* Space between buttons */
+    }
+</style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <%@include file="Components/navbar.jsp"%>
+    <link rel="stylesheet" type="text/css" href="CSS/styles.css">
+
+    <div class="container">
+        <%@include file="Components/alert_message.jsp"%>
+        <div class="row border border-3 rounded p-4 bg-white shadow-sm">
+            <div class="col-md-6">
+                <!-- Image Carousel -->
+                <div id="productCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="Product_imgs/<%=product.getProductImages()%>" class="d-block" alt="<%=product.getProductName()%>">
+                        </div>
+                        <!-- Add more carousel items here if there are multiple images -->
+                    </div>
+                    <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="product-details">
+                    <h2 class="product-title"><%=product.getProductName()%></h2>
+                    <p><b>Description:</b> <%=product.getProductDescription()%></p>
+                    <p>
+                        <b>Price:</b>
+                        <span class="real-price">&#8377;<%=product.getProductPriceAfterDiscount()%></span>
+                        <span class="product-price">&#8377;<%=product.getProductPrice()%></span>
+                        <span class="product-discount"><%=product.getProductDiscount()%> % off</span>
+                    </p>
+                    <p><b>Status:</b> <span id="availability">
+                        <%
+                        if (product.getProductQunatity() > 0) {
+                            out.println("Available");
+                        } else {
+                            out.println("Currently Out of stock");
+                        }
+                        %>
+                    </span></p>
+                    <p><b>Category:</b> <%=catDao.getCategoryName(product.getCategoryId())%></p>
+                    <form method="post">
+                        <div class="text-center mt-3">
+                            <%
+                            if (user == null) {
+                            %>
+                            <button type="button" onclick="window.open('login.jsp', '_self')" class="btn btn-primary btn-custom btn-primary-custom">Add to Cart</button>
+                            <button type="button" onclick="window.open('login.jsp', '_self')" class="btn btn-info btn-custom btn-info-custom btn-spacing">Buy Now</button>
+                            <%
+                            } else {
+                            %>
+                            <button type="submit" formaction="./addtocart?uid=<%=user.getUserId()%>&pid=<%=product.getProductId()%>" class="btn btn-primary btn-custom btn-primary-custom">Add to Cart</button>
+                            <a href="checkout.jsp" id="buy-btn" class="btn btn-info btn-custom btn-info-custom btn-spacing" role="button">Buy Now</a>
+                            <%
+                            }
+                            %>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            if ($('#availability').text().trim() === "Currently Out of stock") {
+                $('#availability').css('color', 'red');
+                $('.btn').addClass('btn-disabled');
+            }
+            $('#buy-btn').click(function(){
+                <%
+                session.setAttribute("pid", productId);
+                session.setAttribute("from", "buy");
+                %>
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+/* General Body and Typography */
+body {
+    font-family: 'Segoe UI', Arial, Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+/* Container */
+.container-fluid {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: 0 auto;
+}
+
+/* Row */
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Columns */
+.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Profile Card */
+.profile-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.profile-img {
+    width: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+}
+
+/* Navigation Menu */
+.nav-menu {
+    margin-top: 20px;
+}
+
+.nav-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.nav-btn.active {
+    background-color: #2874f0;
+    color: #fff;
+}
+
+/* Content Sections */
+.content {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.section {
+    display: none;
+}
+
+.section:not(.hidden) {
+    display: block;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #ff4081;
+    border-color: #ff4081;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e73570;
+    border-color: #e73570;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Utility Classes */
+.m-0 {
+    margin: 0 !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+/* Additional Styles for Improved Layout */
+.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-right: 0;
+    }
+}

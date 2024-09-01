@@ -1,0 +1,111 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page import="com.revature.ecom.Models.wishlistModel"%>
+<%@page import="java.util.List"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@page import="com.revature.ecom.Models.userModel"%>
+<%@page import="com.revature.ecom.Utils.DatabaseUtil"%>
+<%@page import="com.revature.ecom.DAO.wishlistDAO"%>
+
+<%
+userModel u1 = (userModel) session.getAttribute("activeUser");
+if (u1 == null) {
+    messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+    session.setAttribute("message", message);
+    response.sendRedirect("login.jsp");
+    return;  
+}
+
+wishlistDAO wishListDao = new wishlistDAO(DatabaseUtil.getConnection());
+List<wishlistModel> wlist = wishListDao.getListByUserId(u1.getUserId());
+productDAO pDao = new productDAO(DatabaseUtil.getConnection());
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>My Wishlist</title>
+<%@include file="Components/common_css_js.jsp"%>
+<style>
+    .wishlist-empty {
+        margin-top: 5rem;
+        margin-bottom: 5rem;
+        text-align: center;
+    }
+    .wishlist-empty img {
+        max-width: 200px;
+    }
+    .wishlist-empty h4 {
+        margin-top: 1rem;
+    }
+    .table img {
+        width: 50px;
+        height: 50px;
+        width: auto;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+    .remove-btn {
+        color: #fff;
+        background-color: #dc3545;
+        border: none;
+    }
+    .remove-btn:hover {
+        background-color: #c82333;
+    }
+</style>
+</head>
+<body>
+    <!-- Navbar -->
+    <%@include file="Components/navbar.jsp"%>
+
+    <div class="container px-3 py-3">
+        <%
+        if (wlist == null || wlist.size() == 0) {
+        %>
+        <div class="wishlist-empty">
+            <img src="Images/wishlist.png" class="img-fluid" alt="Empty Wishlist">
+            <h4>Empty Wishlist</h4>
+            <p>You have no items in your wishlist. Start adding!</p>
+        </div>
+        <%
+        } else {
+        %>
+        <h4>My Wishlist (<%=wlist.size()%>)</h4>
+        <hr>
+        <div class="container">
+            <table class="table table-hover">
+                <tbody>
+                <%
+                for (wishlistModel w : wlist) {
+                    productModel p = pDao.getProductsByProductId(w.getProductId());
+                %>
+                <tr class="text-center">
+                    <td><img src="Product_imgs/<%=p.getProductImages()%>" alt="<%=p.getProductName()%>"></td>
+                    <td class="text-start"><%=p.getProductName()%></td>
+                    <td>&#8377;<%=p.getProductPriceAfterDiscount()%></td>
+                    <td>
+                        <a href="WishlistServlet?uid=<%=u1.getUserId()%>&pid=<%=p.getProductId()%>&op=delete"
+                           class="btn remove-btn" role="button">Remove</a>
+                    </td>
+                </tr>
+                <%
+                }
+                %>
+                </tbody>
+            </table>
+        </div>
+        <%
+        }
+        %>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

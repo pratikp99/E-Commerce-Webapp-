@@ -1,0 +1,369 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page import="com.revature.ecom.DAO.userDAO"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@page errorPage="error_exception.jsp"%>
+<%
+    adminModel activeAdmin = (adminModel) session.getAttribute("activeAdmin");
+    if (activeAdmin == null) {
+        messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+        session.setAttribute("message", message);
+        response.sendRedirect("adminlogin.jsp");
+        return;
+    }
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Admin Dashboard</title>
+    <%@include file="Components/common_css_js.jsp"%>
+    <style>
+        /* Custom Styles */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            color: #fff;
+            transition: width 0.3s;
+        }
+
+        .sidebar .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-bottom: 1px solid #495057;
+        }
+
+        .sidebar .logo img {
+            width: 100px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            border-bottom: 1px solid #495057;
+            cursor: pointer;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #495057;
+        }
+
+        .sidebar ul li.active {
+            background-color: #007bff;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #007bff;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 250px;
+            width: calc(100% - 250px);
+            z-index: 1000;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header .btn {
+            background-color: #ffffff;
+            color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .header .btn:hover {
+            background-color: #eaeaea;
+        }
+
+        .dashboard-welcome {
+            background: linear-gradient(to right, #ff8a00, #da1d81);
+            color: #fff;
+            padding: 50px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .dashboard-welcome h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-welcome p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-welcome .btn-primary {
+            background-color: #ffffff;
+            color: #ff8a00;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .dashboard-welcome .btn-primary:hover {
+            background-color: #f4f4f4;
+        }
+
+        .management-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .management-cards .card {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .management-cards .card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .management-cards .card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .management-cards .card-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .management-cards .card-content h4 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+        }
+
+        .modal-footer .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .modal-footer .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="Images/logo.png" alt="Logo">
+        </div>
+        <ul>
+            <li class="active"><a href="display_category.jsp">Manage Categories</a></li>
+            <li><a href="display_products.jsp">Manage Products</a></li>
+            <li><a href="display_orders.jsp">Manage Orders</a></li>
+            <li><a href="display_users.jsp">Manage Users</a></li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <button class="btn">Logout</button>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <%@include file="Components/alert_message.jsp"%>
+
+        <!-- Welcome Section -->
+        <div class="dashboard-welcome">
+            <h2>Welcome <%=activeAdmin.getName()%>!</h2>
+            <p>Here you can manage all aspects of your store effectively. Use the sidebar to navigate through categories, products, orders, and users.</p>
+            <a href="display_products.jsp" class="btn-primary">Manage Your Products</a>
+        </div>
+
+        <!-- Management Cards -->
+        <div class="management-cards">
+            <div class="card">
+                <img src="Images/categories.png" alt="Categories">
+                <div class="card-content">
+                    <h4><a href="display_category.jsp" class="text-dark">Manage Categories</a></h4>
+                </div>
+            </div>
+            <div class="card">
+                <img src="Images/products.png" alt="Products">
+                <div class="card-content">
+                    <h4><a href="display_products.jsp" class="text-dark">Manage Products</a></h4>
+                </div>
+            </div>
+            <div class="card">
+                <img src="Images/orders.png" alt="Orders">
+                <div class="card-content">
+                    <h4><a href="display_orders.jsp" class="text-dark">Manage Orders</a></h4>
+                </div>
+            </div>
+            <div class="card">
+                <img src="Images/users.png" alt="Users">
+                <div class="card-content">
+                    <h4><a href="display_users.jsp" class="text-dark">Manage Users</a></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="add-category" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="add" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="operation" value="addCategory">
+                        <div class="mb-3">
+                            <label class="form-label"><b>Category Name</b></label>
+                            <input type="text" name="category_name" class="form-control" placeholder="Enter category name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><b>Category Image</b></label>
+                            <input class="form-control" type="file" name="category_img">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="add-product" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="add" method="post" name="addProductForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="operation" value="addProduct">
+                        <div class="mb-3">
+                            <label class="form-label"><b>Product Name</b></label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><b>Product Description</b></label>
+                            <textarea class="form-control" name="description" rows="4" placeholder="Enter product description"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><b>Unit Price</b></label>
+                                <input type="number" name="price" class="form-control" placeholder="Enter price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><b>Discount Percentage</b></label>
+                                <input type="number" name="discount" onblur="validate()" class="form-control" placeholder="Enter discount percentage">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><b>Product Quantity</b></label>
+                                <input type="number" name="quantity" class="form-control" placeholder="Enter quantity">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label"><b>Category Type</b></label>
+                                <select name="categoryType" class="form-select">
+                                    <option value="0">--Select Category--</option>
+                                    <%
+                                    for (categoryModel c : categoryList) {
+                                    %>
+                                    <option value="<%=c.getCategoryId()%>"><%=c.getCategoryName()%></option>
+                                    <%
+                                    }
+                                    %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><b>Product Image</b></label>
+                            <input type="file" name="photo" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validate() {
+            var dis = document.addProductForm.discount.value;
+            if (dis > 100 || dis < 0) {
+                alert("Discount should be between 0-100!");
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

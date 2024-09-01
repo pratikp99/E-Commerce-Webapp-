@@ -1,0 +1,132 @@
+.social-link {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .social-link:hover {
+        color: #17a2b8;
+        text-decoration: underline;
+        transition: color 0.3s ease;
+    }
+
+    .social-link::before {
+        content: '\f0c1'; /* FontAwesome chain icon */
+        font-family: FontAwesome;
+        padding-right: 8px;
+    }
+    .box-container, .card {
+        border: 2px solid #ddd; /* Light gray border */
+        border-radius: 10px; /* Rounded corners */
+        background-color: white; /* Light background color */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        max-width: 320px; /* Set a maximum width for the box */
+        margin: 0 auto; /* Center align the box within the column */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    }
+    
+    .product-link {
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit color from parent element */
+}
+
+.new-arrival-heading {
+    font-size: 24px; /* Adjust the font size */
+    font-weight: bold; /* Make the font bold */
+    color: #333; /* Set the text color */
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin: 20px 0; /* Add vertical margin */
+}
+
+.new-arrival-heading .arrow {
+    margin-left: 10px; /* Space between text and arrow */
+    font-size: 30px; /* Adjust the size of the arrow */
+    color: #027a3e; /* Set the color of the arrow */
+}
+
+    .box-container:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+    }
+
+    .box-img {
+        max-width: 100%; /* Ensure image fits within the box */
+        max-height: 300px; /* Limit the height of the image */
+        width: auto; /* Maintain aspect ratio */
+        border-radius: 10px 10px 0 0; /* Rounded top corners for the image */
+    }
+    
+    .card:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+    }
+.cus-card {
+	border-radius: 50%;
+	border-color: transparent;
+	max-height: 200px;
+	max-width: 200px;
+	max-height: 200px;
+}
+
+.real-price {
+	font-size: 20px !important;
+	font-weight: 600;
+}
+
+.product-price {
+	font-size: 17px !important;
+	text-decoration: line-through;
+}
+
+.product-discount {
+	font-size: 15px !important;
+	color: #027a3e;
+}
+.welcome-section {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('Images/fashion-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 3rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.welcome-section p.lead {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #f8f9fa;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.welcome-section p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #f8f9fa;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.welcome-section .btn-primary {
+    background-color: #ff4081;
+    border-color: #ff4081;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    transition: background-color 0.3s ease;
+}
+
+.welcome-section .btn-primary:hover {
+    background-color: #e73570;
+    border-color: #e73570;
+}

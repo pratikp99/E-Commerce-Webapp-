@@ -1,0 +1,112 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page import="com.revature.ecom.Models.wishlistModel"%>
+<%@page import="java.util.List"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@page import="com.revature.ecom.Models.userModel"%>
+<%@page import="com.revature.ecom.Utils.DatabaseUtil"%>
+<%@page import="com.revature.ecom.DAO.wishlistDAO"%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        .container {
+            margin-top: 30px;
+        }
+        .wishlist-empty {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .wishlist-empty img {
+            max-width: 150px;
+        }
+        .wishlist-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+        .wishlist-table td {
+            vertical-align: middle;
+        }
+        .wishlist-table .btn {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <%
+        userModel u1 = (userModel) session.getAttribute("activeUser");
+        if (u1 == null) {
+            messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+            session.setAttribute("message", message);
+            response.sendRedirect("login.jsp");
+            return;  
+        }
+        wishlistDAO wishListDao = new wishlistDAO(DatabaseUtil.getConnection());
+        List<wishlistModel> wlist = wishListDao.getListByUserId(u1.getUserId());
+        productDAO pDao = new productDAO(DatabaseUtil.getConnection());
+        %>
+        <%
+        if (wlist == null || wlist.size() == 0) {
+        %>
+        <div class="wishlist-empty">
+            <img src="Images/wishlist.png" alt="Empty Wishlist">
+            <h4 class="mt-3">Empty Wishlist</h4>
+            <p>You have no items in your wishlist. Start adding!</p>
+        </div>
+        <%
+        } else {
+        %>
+        <h4>
+            My Wishlist (<%=wlist.size()%>)
+        </h4>
+        <hr>
+        <div class="container">
+            <table class="table table-hover wishlist-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                    for (wishlistModel w : wlist) {
+                        productModel p = pDao.getProductsByProductId(w.getProductId());
+                    %>
+                    <tr>
+                        <td><img src="Product_imgs/<%=p.getProductImages()%>" alt="<%=p.getProductName()%>"></td>
+                        <td><%=p.getProductName()%></td>
+                        <td>&#8377;<%=p.getProductPriceAfterDiscount()%></td>
+                        <td>
+                            <a href="WishlistServlet?uid=<%=u1.getUserId()%>&pid=<%=p.getProductId()%>&op=delete" class="btn btn-danger">Remove</a>
+                        </td>
+                    </tr>
+                    <%
+                    }
+                    %>
+                </tbody>
+            </table>
+        </div>
+        <%
+        }
+        %>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

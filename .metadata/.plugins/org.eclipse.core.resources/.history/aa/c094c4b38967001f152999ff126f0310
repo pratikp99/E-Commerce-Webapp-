@@ -1,0 +1,127 @@
+/* General Body and Typography */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.container-fluid {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: 0 auto;
+}
+
+/* Row */
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Columns */
+.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Product Card */
+.product-card {
+    border: none;
+    border-radius: 10px;
+    background-color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Product Image */
+.product-image {
+    border-radius: 10px 10px 0 0;
+    object-fit: cover;
+    width: 100%;
+    height: 250px;
+}
+
+/* Wishlist Icon */
+.wishlist-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* Product Text */
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.real-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e73570;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.product-discount {
+    font-size: 1rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.product-description {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #ff4081;
+    border-color: #ff4081;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e73570;
+    border-color: #e73570;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Utility classes */
+.m-0 {
+    margin: 0 !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+/* Additional Styles for Improved Layout */
+.bg-light {
+    background-color: #f8f9fa;
+}

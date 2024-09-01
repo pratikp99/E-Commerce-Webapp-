@@ -1,0 +1,195 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@page import="com.revature.ecom.Models.messageModel"%>
+	<%@page errorPage="error_exception.jsp"%>
+<%@page import="com.revature.ecom.DAO.userDAO"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="com.revature.ecom.Models.adminModel"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page import="com.revature.ecom.Models.categoryModel"%>
+<%
+adminModel activeAdmin = (adminModel) session.getAttribute("activeAdmin");
+if (activeAdmin == null) {
+	messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+	session.setAttribute("message", message);
+	response.sendRedirect("adminlogin.jsp");
+	return;
+}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Admin Dashboard</title>
+<%@include file="Components/common_css_js.jsp"%>
+<link rel="stylesheet" href="path_to_bootstrap.css">
+<link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminlogout.jsp">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col text-center">
+                <img src="Images/admin.png" class="img-fluid admin-avatar mb-3">
+                <h2>Welcome, <%=activeAdmin.getName()%></h2>
+            </div>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <a href="display_category.jsp" class="text-decoration-none">
+                    <div class="card hover-shadow">
+                        <div class="card-body">
+                            <img src="Images/categories.png" class="img-fluid icon-size">
+                            <h5 class="card-title mt-3">Category</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="display_products.jsp" class="text-decoration-none">
+                    <div class="card hover-shadow">
+                        <div class="card-body">
+                            <img src="Images/products.png" class="img-fluid icon-size">
+                            <h5 class="card-title mt-3">Products</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="display_orders.jsp" class="text-decoration-none">
+                    <div class="card hover-shadow">
+                        <div class="card-body">
+                            <img src="Images/order.png" class="img-fluid icon-size">
+                            <h5 class="card-title mt-3">Orders</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="display_users.jsp" class="text-decoration-none">
+                    <div class="card hover-shadow">
+                        <div class="card-body">
+                            <img src="Images/users.png" class="img-fluid icon-size">
+                            <h5 class="card-title mt-3">Users</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="add-category" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="add" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="operation" value="addCategory">
+                        <div class="mb-3">
+                            <label for="category_name" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="category_name" name="category_name" placeholder="Enter category name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category_img" class="form-label">Category Image</label>
+                            <input class="form-control" type="file" id="category_img" name="category_img" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="add-product" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="add" method="post" name="addProductForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="operation" value="addProduct">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Product Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Unit Price</label>
+                                <input type="number" class="form-control" id="price" name="price" placeholder="Enter price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="discount" class="form-label">Discount Percentage</label>
+                                <input type="number" class="form-control" id="discount" name="discount" onblur="validate()" placeholder="Enter discount if any!">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">Product Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Enter product quantity">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categoryType" class="form-label">Select Category Type</label>
+                                <select class="form-select" id="categoryType" name="categoryType">
+                                    <option value="0">--Select Category--</option>
+                                    <%
+                                    for (categoryModel c : categoryList) {
+                                    %>
+                                    <option value="<%=c.getCategoryId()%>"><%=c.getCategoryName()%></option>
+                                    <%
+                                    }
+                                    %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">Product Image</label>
+                            <input class="form-control" type="file" id="photo" name="photo" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="path_to_bootstrap.js"></script>
+    <script src="path_to_jquery.js"></script>
+    <script src="path_to_custom.js"></script>
+</body>
+</html>

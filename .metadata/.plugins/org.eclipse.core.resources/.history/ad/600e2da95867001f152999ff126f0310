@@ -1,0 +1,189 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Find Your Perfect Outfit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="path/to/your/css/styles.css">
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-text {
+        color: #4a5568;
+        font-weight: bold;
+        font-size: 2rem;
+    }
+
+    .sub-text {
+        color: #718096;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .action-link {
+        color: #1a202c;
+        font-weight: bold;
+        margin-top: 20px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .action-link:hover {
+        color: #2b6cb0;
+    }
+
+    .swiper-container {
+        width: 100%;
+        height: 500px;
+        margin-top: 50px;
+    }
+
+    .swiper-slide {
+        background-size: cover;
+        background-position: center;
+        height: 500px;
+    }
+
+    .section {
+        margin-top: 50px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4a5568;
+    }
+
+    .listing-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .listing-item {
+        flex: 1 1 calc(25% - 20px);
+        background: #f7fafc;
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .listing-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .listing-item img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .listing-item h3 {
+        font-size: 1.2rem;
+        color: #2d3748;
+        margin-top: 10px;
+    }
+
+    .listing-item p {
+        font-size: 0.9rem;
+        color: #718096;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="intro-section">
+            <h1 class="header-text">Find your next <span style="color: #a0aec0;">perfect</span> outfit with ease</h1>
+            <p class="sub-text">
+                This is the best place to find your next perfect outfit.
+                <br />
+                We have a wide range of clothing collections for you to choose from.
+            </p>
+            <a href="search.jsp" class="action-link">Let's get started...</a>
+        </div>
+
+        <!-- Swiper -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <c:forEach var="item" items="${offerListings}">
+                    <div class="swiper-slide" style="background: url(${item.imageUrls[0]}) center no-repeat; background-size: cover;">
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
+
+        <!-- Sections -->
+        <div class="section">
+            <c:if test="${not empty offerListings}">
+                <div class="section-header">
+                    <h2 class="section-title">Recent offers</h2>
+                    <a class="action-link" href="search.jsp?offer=true">Show more offers</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${offerListings}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+
+        <div class="section">
+            <c:if test="${not empty newArrivals}">
+                <div class="section-header">
+                    <h2 class="section-title">New Arrivals</h2>
+                    <a class="action-link" href="search.jsp?type=new">Show more new arrivals</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${newArrivals}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+
+        <div class="section">
+            <c:if test="${not empty bestSellers}">
+                <div class="section-header">
+                    <h2 class="section-title">Best Sellers</h2>
+                    <a class="action-link" href="search.jsp?type=best">Show more best sellers</a>
+                </div>
+                <div class="listing-items">
+                    <c:forEach var="listing" items="${bestSellers}">
+                        <div class="listing-item">
+                            <img src="${listing.imageUrl}" alt="${listing.name}">
+                            <h3>${listing.name}</h3>
+                            <p>${listing.price}</p>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper('.swiper-container', {
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    </script>
+</body>
+</html>
+
+

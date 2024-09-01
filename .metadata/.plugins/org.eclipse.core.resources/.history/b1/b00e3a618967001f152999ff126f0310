@@ -1,0 +1,117 @@
+<%@page import="com.revature.ecom.DAO.wishlistDAO"%>
+<%@page import="com.revature.ecom.Models.userModel"%>
+<%@page import="com.revature.ecom.DAO.categoryDAO"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="java.util.List"%>
+<%@page import="com.revature.ecom.Utils.DatabaseUtil"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%
+userModel u = (userModel) session.getAttribute("activeUser");
+wishlistDAO wishlistDao = new wishlistDAO(DatabaseUtil.getConnection());
+
+String searchKey = request.getParameter("search");
+String catId = request.getParameter("category");
+categoryDAO categoryDao = new categoryDAO(DatabaseUtil.getConnection());
+String message = "";
+
+productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+List<productModel> prodList = null;
+if (searchKey != null) {
+	if (!searchKey.isEmpty()) {
+		message = "Showing results for \"" + searchKey + "\"";
+	}else{
+		message = "No product found!";
+	}
+	prodList = productDao.getAllProductsBySearchKey(searchKey);
+
+} else if (catId != null && !(catId.trim().equals("0"))) {
+	prodList = productDao.getAllProductsByCategoryId(Integer.parseInt(catId.trim()));
+	message = "Showing results for \"" + categoryDao.getCategoryName(Integer.parseInt(catId.trim())) + "\"";
+} else {
+	prodList = productDao.getAllProducts();
+	message = "All Products";
+}
+
+if (prodList != null && prodList.size() == 0) {
+
+	message = "No items are available for \""
+	+ (searchKey != null ? searchKey : categoryDao.getCategoryName(Integer.parseInt(catId.trim()))) + "\"";
+
+	prodList = productDao.getAllProducts();
+}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Products</title>
+<%@include file="Components/common_css_js.jsp"%>
+<link rel="stylesheet" type="text/css" href="CSS/styles.css">
+</head>
+<body class="bg-light">
+	<!--navbar -->
+	<%@include file="Components/navbar.jsp"%>
+	<!--show products-->
+	<h4 class="text-center mt-4 font-weight-bold"><%=message%></h4>
+	<div class="container-fluid my-4 px-5">
+		<div class="row row-cols-1 row-cols-md-4 g-4">
+			<%
+			for (productModel p : prodList) {
+			%>
+			<div class="col">
+				<div class="card product-card shadow-sm">
+					<div class="position-relative">
+						<img src="Product_imgs/<%=p.getProductImages()%>"
+							class="card-img-top product-image">
+						<div class="wishlist-icon">
+							<%
+							if (u != null) {
+								if (wishlistDao.getWishlist(u.getUserId(), p.getProductId())) {
+							%>
+							<button
+								onclick="window.open('wishlist?uid=<%=u.getUserId()%>&pid=<%=p.getProductId()%>&op=remove', '_self')"
+								class="btn btn-link p-0">
+								<i class="fa-sharp fa-solid fa-heart text-danger"></i>
+							</button>
+							<%
+							} else {
+							%>
+							<button type="submit"
+								onclick="window.open('wishlist?uid=<%=u.getUserId()%>&pid=<%=p.getProductId()%>&op=add', '_self')"
+								class="btn btn-link p-0">
+								<i class="fa-sharp fa-solid fa-heart text-secondary"></i>
+							</button>
+							<%
+							}
+							} else {
+							%>
+							<button onclick="window.open('login.jsp', '_self')"
+								class="btn btn-link p-0">
+								<i class="fa-sharp fa-solid fa-heart text-secondary"></i>
+							</button>
+							<%
+							}
+							%>
+						</div>
+					</div>
+					<div class="card-body text-center">
+						<h5 class="card-title"><%=p.getProductName()%></h5>
+						<div>
+							<span class="real-price">&#8377;<%=p.getProductPriceAfterDiscount()%></span>&ensp;
+							<span class="product-price">&#8377;<%=p.getProductPrice()%></span>&ensp;
+							<span class="product-discount"><%=p.getProductDiscount()%>&#37; off</span>
+						</div>
+						<p class="product-description mt-2"><%=p.getProductDescription()%></p>
+						<button type="button"
+							onclick="window.open('viewProduct.jsp?pid=<%=p.getProductId()%>', '_self')"
+							class="btn btn-primary btn-block mt-3">View Details</button>
+					</div>
+				</div>
+			</div>
+			<%
+			}
+			%>
+		</div>
+	</div>
+</body>
+</html>

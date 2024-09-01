@@ -1,0 +1,72 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+
+import com.revature.ecom.DAO.cartDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Models.cartModel;
+import com.revature.ecom.Models.messageModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+
+/**
+ * Servlet implementation class addtocartServlet
+ */
+public class addtocartServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public addtocartServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		//doGet(request, response);
+		int uid = Integer.parseInt(request.getParameter("uid"));
+		int pid = Integer.parseInt(request.getParameter("pid"));
+
+		cartDAO cartDao = new cartDAO(DatabaseUtil.getConnection());
+		int qty = cartDao.getQuantity(uid, pid);
+		HttpSession session = request.getSession();
+		messageModel message = null;
+		
+		if (qty == 0) {
+			cartModel cart = new cartModel(uid, pid, qty + 1);
+			cartDao.addToCart(cart);
+			message = new messageModel("Product is added to cart successfully!", "success", "alert-success");
+			
+		}else {
+			int cid = cartDao.getIdByUserIdAndProductId(uid, pid);
+			cartDao.updateQuantity(cid, qty+1);
+			message = new messageModel("Product quantity is increased!", "success", "alert-success");
+		}
+		//updating quantity of product in database
+		productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+		productDao.updateQuantity(pid, productDao.getProductQuantityById(pid) - 1);
+		session.setAttribute("message", message);
+		response.sendRedirect("viewProduct.jsp?pid="+pid);
+
+	}
+
+}

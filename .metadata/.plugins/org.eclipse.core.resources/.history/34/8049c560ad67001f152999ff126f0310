@@ -1,0 +1,55 @@
+/* styles2.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 30px;
+}
+
+.admin-avatar {
+    border-radius: 50%;
+    max-width: 150px;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.hover-shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.icon-size {
+    max-width: 50px;
+}
+
+.modal-header {
+    background-color: #2874f0;
+    color: #fff;
+}
+
+.modal-footer .btn-primary {
+    background-color: #2874f0;
+}
+
+.modal-body input, .modal-body select, .modal-body textarea {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+}
+
+.text-center h2 {
+    font-size: 24px;
+    font-weight: bold;
+}

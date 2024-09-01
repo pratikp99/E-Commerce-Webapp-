@@ -1,0 +1,211 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import com.revature.ecom.DAO.categoryDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Models.categoryModel;
+import com.revature.ecom.Models.messageModel;
+import com.revature.ecom.Models.productModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+
+
+@MultipartConfig
+public class addServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String operation = request.getParameter("operation");
+		categoryDAO catDao = null;
+		try {
+			catDao = new categoryDAO(DatabaseUtil.getConnection());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		productDAO pdao = null;
+		try {
+			pdao = new productDAO(DatabaseUtil.getConnection());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		HttpSession session = request.getSession();
+		messageModel message = null;
+
+		if (operation.trim().equals("addCategory")) {
+
+			String categoryName = request.getParameter("category_name");
+			Part part = request.getPart("category_img");
+			categoryModel category = new categoryModel(categoryName, part.getSubmittedFileName());
+			boolean flag = catDao.saveCategory(category);
+
+			String path = request.getServletContext().getRealPath("/") + "Product_imgs" + File.separator
+					+ part.getSubmittedFileName();
+
+			try {
+				FileOutputStream fos = new FileOutputStream(path);
+				InputStream is = part.getInputStream();
+				byte[] data = new byte[is.available()];
+				is.read(data);
+				fos.write(data);
+				fos.flush();
+				fos.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (flag) {
+				message = new messageModel("Category added successfully!!", "success", "alert-success");
+			} else {
+				message = new messageModel("Something went wrong! Try again!!", "error", "alert-danger");
+			}
+			session.setAttribute("message", message);
+			response.sendRedirect("admin.jsp");
+
+		} else if (operation.trim().equals("addProduct")) {
+
+			// add product to database
+			String pName = request.getParameter("name");
+			String pDesc = request.getParameter("description");
+			int pPrice = Integer.parseInt(request.getParameter("price"));
+			int pDiscount = Integer.parseInt(request.getParameter("discount"));
+			if (pDiscount < 0 || pDiscount > 100) {
+				pDiscount = 0;
+			}
+			int pQuantity = Integer.parseInt(request.getParameter("quantity"));
+			Part part = request.getPart("photo");
+			int categoryType = Integer.parseInt(request.getParameter("categoryType"));
+
+			productModel product = new productModel(pName, pDesc, pPrice, pDiscount, pQuantity, part.getSubmittedFileName(),
+					categoryType);
+			boolean flag = pdao.saveProduct(product);
+
+			String path = request.getServletContext().getRealPath("/") + "Product_imgs" + File.separator
+					+ part.getSubmittedFileName();
+			try {
+				FileOutputStream fos = new FileOutputStream(path);
+				InputStream is = part.getInputStream();
+				byte[] data = new byte[is.available()];
+				is.read(data);
+				fos.write(data);
+				fos.flush();
+				fos.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (flag) {
+				message = new messageModel("Product added successfully!!", "success", "alert-success");
+			} else {
+				message = new messageModel("Something went wrong! Try again!!", "error", "alert-danger");
+			}
+			session.setAttribute("message", message);
+			response.sendRedirect("admin.jsp");
+			
+		} else if (operation.trim().equals("updateCategory")) {
+
+			int cid = Integer.parseInt(request.getParameter("cid"));
+			String name = request.getParameter("category_name");
+			Part part = request.getPart("category_img");
+			if (part.getSubmittedFileName().isEmpty()) {
+				String image = request.getParameter("image");
+				categoryModel category = new categoryModel(cid, name, image);
+				catDao.updateCategory(category);
+			} else {
+				categoryModel category = new categoryModel(cid, name, part.getSubmittedFileName());
+				catDao.updateCategory(category);
+				String path = request.getServletContext().getRealPath("/") + "Product_imgs" + File.separator
+						+ part.getSubmittedFileName();
+				try {
+					FileOutputStream fos = new FileOutputStream(path);
+					InputStream is = part.getInputStream();
+					byte[] data = new byte[is.available()];
+					is.read(data);
+					fos.write(data);
+					fos.flush();
+					fos.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			message = new messageModel("Category updated successfully!!", "success", "alert-success");
+			session.setAttribute("message", message);
+			response.sendRedirect("display_category.jsp");
+			
+		} else if (operation.trim().equals("deleteCategory")) {
+
+			int cid = Integer.parseInt(request.getParameter("cid"));
+			catDao.deleteCategory(cid);
+			response.sendRedirect("display_category.jsp");
+
+		} else if (operation.trim().equals("updateProduct")) {
+
+		    int pid = Integer.parseInt(request.getParameter("pid"));
+		    String name = request.getParameter("name");
+		    float price = Float.parseFloat(request.getParameter("price"));
+		    String description = request.getParameter("description");
+		    int quantity = Integer.parseInt(request.getParameter("quantity"));
+		    int discount = Integer.parseInt(request.getParameter("discount"));
+		    if (discount < 0 || discount > 100) {
+		        discount = 0;
+		    }
+		    Part part = request.getPart("product_img");
+		    int cid = Integer.parseInt(request.getParameter("categoryType"));
+		    
+		    // Use `categoryType` directly if it's not 0; otherwise use `category` (previous value)
+		    if (cid == 0) {
+		        cid = Integer.parseInt(request.getParameter("category"));
+		    }
+		    
+		    // Handle image and product update
+		    String image = part.getSubmittedFileName();
+		    if (image.isEmpty()) {
+		        image = request.getParameter("image");
+		    }
+
+		    productModel product = new productModel(pid, name, description, price, discount, quantity, image, cid);
+		    boolean flag = pdao.updateProduct(product);
+
+		    if (flag && !image.isEmpty()) {
+		        // Upload new image
+		        String path = request.getServletContext().getRealPath("/") + "Product_imgs" + File.separator + image;
+		        try (FileOutputStream fos = new FileOutputStream(path);
+		             InputStream is = part.getInputStream()) {
+		            byte[] data = new byte[is.available()];
+		            is.read(data);
+		            fos.write(data);
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+
+		    message = new messageModel("Product updated successfully!!", "success", "alert-success");
+		    session.setAttribute("message", message);
+		    response.sendRedirect("display_products.jsp");
+		}
+
+		return;
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doPost(req, resp);
+	}
+}

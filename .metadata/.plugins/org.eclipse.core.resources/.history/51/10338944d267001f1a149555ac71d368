@@ -1,0 +1,129 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%
+adminModel activeAdmin = (adminModel) session.getAttribute("activeAdmin");
+if (activeAdmin == null) {
+    messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+    session.setAttribute("message", message);
+    response.sendRedirect("adminlogin.jsp");
+    return;
+}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Update Category</title>
+<%@include file="Components/common_css_js.jsp"%>
+<style>
+    .container {
+        max-width: 700px;
+        margin: -50px auto;
+        padding: 30px 15px;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        padding: 20px;
+    }
+
+    .btn-primary {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 18px;
+    }
+
+    .uploaded-image {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .uploaded-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .uploaded-image label {
+        margin-right: 10px;
+    }
+</style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="mb-3">
+        <%@include file="Components/navbar.jsp"%>
+    </div>
+
+    <!-- Update Category -->
+    <%
+    int cid = Integer.parseInt(request.getParameter("cid"));
+    categoryModel category = catDao.getCategoryById(cid);
+    %>
+    <div class="container ">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3>Update Category</h3>
+                    </div>
+                    <form action="add?cid=<%=cid%>" method="post" enctype="multipart/form-data">
+                        <div class="card-body">
+                            <input type="hidden" name="operation" value="updateCategory">
+                            <div class="mb-3">
+                                <label for="category_name" class="form-label">Category Name</label>
+                                <input type="text" id="category_name" name="category_name" value="<%=category.getCategoryName()%>" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="category_img" class="form-label">Category Image</label>
+                                <input id="category_img" class="form-control" type="file" name="category_img">
+                            </div>
+                            <div class="mb-3 uploaded-image">
+                                <label for="uploaded_img" class="form-label">Uploaded Image:</label>
+                                <%=category.getCategoryImage()%>
+                                <img src="Product_imgs/<%=category.getCategoryImage()%>" alt="Uploaded Image">
+                                <input type="hidden" name="image" value="<%=category.getCategoryImage()%>">
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End -->
+</body>
+</html>
