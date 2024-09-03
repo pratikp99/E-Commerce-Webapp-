@@ -1,0 +1,48 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Utils.mailMessage;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+
+import java.io.IOException;
+
+@WebServlet("/updateorder")
+public class updateOrderServlets extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private orderService orderService;
+
+    public updateOrderServlets() {
+        super();
+        try {
+            this.orderService = new OrderServiceImpl();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int oid = Integer.parseInt(request.getParameter("oid"));
+        String status = request.getParameter("status");
+
+        orderService.updateOrderStatus(oid, status);
+
+        if (status.trim().equals("Shipped") || status.trim().equals("Out For Delivery")) {
+            orderModel order = orderService.getOrderById(oid);
+            // Assuming you have a userDAO or similar service to get user details.
+            // You may need to update this section based on your actual implementation.
+            String userName = "exampleUser"; // Replace with actual method to get userName
+            String userEmail = "example@example.com"; // Replace with actual method to get userEmail
+
+            mailMessage.orderShipped(userName, userEmail, order.getOrderId(), order.getDate().toString());
+        }
+
+        response.sendRedirect("display_orders.jsp");
+    }
+}

@@ -22,4 +22,5 @@
     <fullyQualifiedTypeName name="com.revature.ecom.Models.userModel"/>
     <fullyQualifiedTypeName name="jakarta.servlet.http.HttpSession"/>
     <fullyQualifiedTypeName name="com.revature.ecom.Utils.DatabaseUtil"/>
+    <fullyQualifiedTypeName name="jakarta.servlet.annotation.WebServlet"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,35 @@
+package com.revature.ecom.service;
+
+import com.revature.ecom.DAO.cartDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Models.cartModel;
+import com.revature.ecom.Models.productModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+
+import java.sql.Connection;
+import java.util.List;
+
+public class CartService {
+    private cartDAO cartDao;
+    private productDAO productDao;
+
+    public CartService() {
+        Connection connection = DatabaseUtil.getConnection();
+        this.cartDao = new cartDAO(connection);
+        this.productDao = new productDAO(connection);
+    }
+
+    public List<cartModel> getCartListByUserId(int userId) {
+        return cartDao.getCartListByUserId(userId);
+    }
+
+    public float calculateTotalPrice(List<cartModel> cartList) {
+        float totalPrice = 0;
+        for (cartModel c : cartList) {
+            productModel prod = productDao.getProductsByProductId(c.getProductId());
+            c.setProduct(prod);  // Assuming you have a setter in cartModel to set product details
+            totalPrice += c.getQuantity() * prod.getProductPriceAfterDiscount();
+        }
+        return totalPrice;
+    }
+}

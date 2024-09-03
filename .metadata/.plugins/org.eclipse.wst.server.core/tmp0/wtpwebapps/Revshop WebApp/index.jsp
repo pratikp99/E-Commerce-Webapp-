@@ -278,20 +278,15 @@ List<productModel> topDeals = productDao.getDiscountedProducts();
 </div>
 <!-- End of Footer -->
 
-
-	
-	<!-- end -->
-
 	<!-- confirmation message for successful order -->
 	<%
 	String order = (String) session.getAttribute("order");
 	if (order != null) {
 	%>
 	<script type="text/javascript">
-		console.log("testing..4...");
 		Swal.fire({
 		  icon : 'success',
-		  title: 'Order Placed, Thank you!',
+		  title: 'Order Placed, Thank you!! Visit Us Again!!!',
 		  text: 'Confirmation will be sent to <%=user.getUserEmail()%>',
 		  width: 600,
 		  padding: '3em',

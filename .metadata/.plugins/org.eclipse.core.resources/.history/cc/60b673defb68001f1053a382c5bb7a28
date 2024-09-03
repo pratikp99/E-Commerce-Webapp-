@@ -1,0 +1,276 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@page errorPage="error_exception.jsp"%>
+<%@page import="com.revature.ecom.DAO.userDAO"%>
+<%@page import="com.revature.ecom.Models.productModel"%>
+<%@page import="com.revature.ecom.DAO.productDAO"%>
+<%@page import="com.revature.ecom.DAO.cartDAO"%>
+<%
+userModel activeUser = (userModel) session.getAttribute("activeUser");
+if (activeUser == null) {
+	messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+	session.setAttribute("message", message);
+	response.sendRedirect("login.jsp");
+	return;  
+}
+String from = (String)session.getAttribute("from");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Checkout</title>
+<%@include file="Components/common_css_js.jsp"%>
+<style>
+    /* Your existing CSS styles */
+    .vertical-spacing { margin-bottom: 20px; }
+    .centered { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .container { max-width: 1200px; }
+    .card-header { background-color: #389aeb; color: white; padding: 10px; border-radius: 0.25rem 0.25rem 0 0; }
+    .card-body { padding: 20px; }
+    .card-body h4, .price-details-heading { margin: 0; font-size: 1.5rem; font-weight: 600; color: #333; }
+    .card-body table { width: 100%; margin-top: 1rem; }
+    .card-body table td { padding: 0.75rem; vertical-align: top; }
+    .card-body table tr:nth-child(odd) { background-color: #f9f9f9; }
+    .card-body table tr:last-child { font-weight: 600; font-size: 1.25rem; }
+    .card-body table td h5 { margin: 0; }
+    .btn-outline-primary { border-color: #389aeb; color: #389aeb; }
+    .btn-outline-primary:hover { background-color: #389aeb; color: white; }
+    .form-check-input:checked { background-color: #389aeb; border-color: #389aeb; }
+</style>
+</head>
+<body>
+    <!-- Navbar -->
+    <%@include file="Components/navbar.jsp"%>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Delivery Address</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5><%=activeUser.getUserName()%> &nbsp; <%=activeUser.getUserPhone()%></h5>
+                        <%
+                        StringBuilder str = new StringBuilder();
+                        str.append(activeUser.getUserAddress() + ", ");
+                        str.append(activeUser.getUserCity() + ", ");
+                        str.append(activeUser.getUserState() + ", ");
+                        str.append(activeUser.getUserPincode());
+                        out.println(str);
+                        %>
+                        <br>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-primary"
+                                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Change Address
+                            </button>
+                        </div>
+                        <hr>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Payment Options</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="checkout-form" action="orders" method="post">
+                                    <input type="hidden" name="payment_id" id="payment_id">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="paymentMode"
+                                            value="Card Payment" required>
+                                        <label class="form-check-label">Credit/Debit/ATM card</label><br>
+                                        <div class="mb-3">
+                                            <input class="form-control mt-3" type="number"
+                                                placeholder="Enter card number" name="cardno">
+                                            <div class="row gx-5">
+                                                <div class="col mt-3">
+                                                    <input class="form-control" type="number"
+                                                        placeholder="Enter CVV" name="cvv">
+                                                </div>
+                                                <div class="col mt-3">
+                                                    <input class="form-control" type="text"
+                                                        placeholder="Valid through i.e '07/23'">
+                                                </div>
+                                            </div>
+                                            <input class="form-control mt-3" type="text"
+                                                placeholder="Enter card holder name" name="name">
+                                        </div>
+                                        <input class="form-check-input" type="radio" name="paymentMode"
+                                            value="Cash on Delivery">
+                                        <label class="form-check-label">Cash on Delivery</label>
+                                    </div>
+                                    <div class="text-end">
+                                        <button id="rzp-button1" type="button"
+                                            class="btn btn-lg btn-outline-primary mt-3">Place Order</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Left Column -->
+
+            <!-- Price Details -->
+            <div class="col-md-8 vertical-spacing">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="price-details-heading">Price Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <%
+                        float totalPrice = 0;
+                        if (from.trim().equals("cart")) {
+                            cartDAO cartDao = new cartDAO(DatabaseUtil.getConnection());
+                            int totalProduct = cartDao.getCartCountByUserId(activeUser.getUserId());
+                            totalPrice = (float) session.getAttribute("totalPrice");
+                        %>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>Total Item</td>
+                                <td><%=totalProduct%></td>
+                            </tr>
+                            <tr>
+                                <td>Total Price</td>
+                                <td>&#8377; <%=totalPrice%></td>
+                            </tr>
+                            <tr>
+                                <td>Delivery Charges</td>
+                                <td>&#8377; 40</td>
+                            </tr>
+                            <tr>
+                                <td>Packaging Charges</td>
+                                <td>&#8377; 29</td>
+                            </tr>
+                            <tr>
+                                <td><h5>Amount Payable :</h5></td>
+                                <td><h5>&#8377; <%=totalPrice + 69%></h5></td>
+                            </tr>
+                        </table>
+                        <%
+                        } else {
+                            productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+                            int pid = (int) session.getAttribute("pid");
+                            float price = productDao.getProductPriceById(pid);
+                            totalPrice = price;
+                        %>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>Total Item</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Total Price</td>
+                                <td>&#8377; <%=price%></td>
+                            </tr>
+                            <tr>
+                                <td>Delivery Charges</td>
+                                <td>&#8377; 40</td>
+                            </tr>
+                            <tr>
+                                <td>Packaging Charges</td>
+                                <td>&#8377; 29</td>
+                            </tr>
+                            <tr>
+                                <td><h5>Amount Payable :</h5></td>
+                                <td><h5>&#8377; <%=price + 69%></h5></td>
+                            </tr>
+                        </table>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Price Details -->
+
+        </div>
+
+        <!-- Change Address Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Change Address</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <form action="updateuser" method="post">
+                        <input type="hidden" name="operation" value="changeAddress">
+                        <div class="modal-body mx-3">
+                            <div class="mt-2">
+                                <label class="form-label fw-bold">Address</label>
+                                <textarea name="user_address" rows="3"
+                                    placeholder="Enter Address"
+                                    class="form-control" required></textarea>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label fw-bold">City</label>
+                                <input type="text" name="user_city"
+                                    class="form-control" placeholder="Enter City"
+                                    required>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label fw-bold">State</label>
+                                <input type="text" name="user_state"
+                                    class="form-control" placeholder="Enter State"
+                                    required>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label fw-bold">Pincode</label>
+                                <input type="text" name="user_pincode"
+                                    class="form-control" placeholder="Enter Pincode"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit"
+                                class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End of Change Address Modal -->
+    </div>
+
+    <%-- Razorpay Integration --%>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.getElementById('rzp-button1').onclick = function (e) {
+            e.preventDefault();
+            var options = {
+                "key": "your_razorpay_key_id", // Enter the Key ID generated from the Dashboard
+                "amount": "<%= (totalPrice + 69) * 100 %>", // Amount is in paise (total amount in INR * 100)
+                "currency": "INR",
+                "name": "Your Store Name",
+                "description": "Test Transaction",
+                "image": "/your_logo_url",
+                "order_id": "order_9A33XWu170gUtm", // Replace with order_id created in server-side
+                "handler": function (response) {
+                    document.getElementById('payment_id').value = response.razorpay_payment_id;
+                    document.getElementById('checkout-form').submit(); // Submit the form
+                },
+                "prefill": {
+                    "name": "<%=activeUser.getUserName()%>",
+                    "email": "<%=activeUser.getUserEmail()%>",
+                    "contact": "<%=activeUser.getUserPhone()%>"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        };
+    </script>
+    <%-- End of Razorpay Integration --%>
+
+</body>
+</html>

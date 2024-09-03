@@ -1,0 +1,30 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import java.util.List;
+
+@WebServlet("/displayOrders")
+public class DisplayOrdersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private orderService orderService;
+
+    public DisplayOrdersServlet() {
+        super();
+        this.orderService = new OrderServiceImpl();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<orderModel> orderList = orderService.getAllOrders();
+        request.setAttribute("orderList", orderList);
+        request.getRequestDispatcher("display_orders.jsp").forward(request, response);
+    }
+}

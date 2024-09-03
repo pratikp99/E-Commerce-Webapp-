@@ -1,0 +1,43 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+
+@WebServlet("/displayOrders")
+public class DisplayOrdersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private orderService orderService;
+
+    public DisplayOrdersServlet() {
+        super();
+        this.orderService = new OrderServiceImpl();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            List<orderModel> orderList = orderService.getAllOrders();
+            request.setAttribute("orderList", orderList);
+
+            // Assuming you need to fetch ordered products for each order
+            for (orderModel order : orderList) {
+                List<orderedProductModel> orderedProducts = orderService.getOrderedProductsByOrderId(order.getId());
+                request.setAttribute("orderedProducts", orderedProducts);
+            }
+
+            request.getRequestDispatcher("display_orders.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred while displaying orders.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+}

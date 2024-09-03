@@ -1,0 +1,36 @@
+package com.revature.ecom.Servlets;
+
+import com.revature.ecom.service.OrderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
+@WebServlet("/updateorder")
+public class updateOrderServlets extends HttpServlet {
+
+    private OrderService orderService;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+			this.orderService = new OrderServiceImpl();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int orderId = Integer.parseInt(request.getParameter("oid"));
+        String status = request.getParameter("status");
+
+        orderService.updateOrderStatus(orderId, status);
+
+        response.sendRedirect("vieworders");
+    }
+}

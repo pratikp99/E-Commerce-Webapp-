@@ -1,0 +1,108 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import com.revature.ecom.DAO.CartDAO;
+import com.revature.ecom.DAO.OrderDAO;
+import com.revature.ecom.DAO.OrderedProductDAO;
+import com.revature.ecom.DAO.ProductDAO;
+import com.revature.ecom.Models.CartModel;
+import com.revature.ecom.Models.OrderModel;
+import com.revature.ecom.Models.OrderedProductModel;
+import com.revature.ecom.Models.ProductModel;
+import com.revature.ecom.Models.UserModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.Utils.OrderID;
+import com.revature.ecom.Utils.MailMessage;
+
+@WebServlet("/orders")
+public class ordersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String from = (String) session.getAttribute("from");
+        String paymentType = request.getParameter("paymentMode");
+        userModel user = (userModel) session.getAttribute("activeUser");
+        String orderId = OrderID.getOrderId();
+        String status = "Order Placed";
+
+        try {
+            if ("cart".equalsIgnoreCase(from.trim())) {
+                handleCartOrder(user, paymentType, orderId);
+                session.removeAttribute("from");
+                session.removeAttribute("totalPrice");
+            } else if ("buy".equalsIgnoreCase(from.trim())) {
+                handleDirectPurchase(user, paymentType, orderId, session);
+                session.removeAttribute("from");
+                session.removeAttribute("pid");
+            }
+
+            session.setAttribute("order", "success");
+            MailMessage.successfullyOrderPlaced(user.getUserName(), user.getUserEmail(), orderId, new Date().toString());
+            response.sendRedirect("index.jsp");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("order", "failure");
+            response.sendRedirect("error.jsp");
+        }
+    }
+
+    private void handleCartOrder(UserModel user, String paymentType, String orderId) throws Exception {
+        OrderModel order = new OrderModel(orderId, status, paymentType, user.getUserId());
+        try (OrderDAO orderDao = new OrderDAO(DatabaseUtil.getConnection());
+             CartDAO cartDao = new CartDAO(DatabaseUtil.getConnection());
+             OrderedProductDAO orderedProductDao = new OrderedProductDAO(DatabaseUtil.getConnection());
+             ProductDAO productDao = new ProductDAO(DatabaseUtil.getConnection())) {
+
+            int id = orderDao.insertOrder(order);
+            List<CartModel> listOfCart = cartDao.getCartListByUserId(user.getUserId());
+
+            for (CartModel item : listOfCart) {
+                ProductModel prod = productDao.getProductsByProductId(item.getProductId());
+                OrderedProductModel orderedProduct = new OrderedProductModel(
+                        prod.getProductName(),
+                        item.getQuantity(),
+                        prod.getProductPriceAfterDiscount(),
+                        prod.getProductImages(),
+                        id
+                );
+                orderedProductDao.insertOrderedProduct(orderedProduct);
+            }
+
+            cartDao.removeAllProduct();
+        }
+    }
+
+    private void handleDirectPurchase(UserModel user, String paymentType, String orderId, HttpSession session) throws Exception {
+        int pid = (int) session.getAttribute("pid");
+        OrderModel order = new OrderModel(orderId, status, paymentType, user.getUserId());
+        try (OrderDAO orderDao = new OrderDAO(DatabaseUtil.getConnection());
+             OrderedProductDAO orderedProductDao = new OrderedProductDAO(DatabaseUtil.getConnection());
+             ProductDAO productDao = new ProductDAO(DatabaseUtil.getConnection())) {
+
+            int id = orderDao.insertOrder(order);
+            ProductModel prod = productDao.getProductsByProductId(pid);
+            OrderedProductModel orderedProduct = new OrderedProductModel(
+                    prod.getProductName(),
+                    1,
+                    prod.getProductPriceAfterDiscount(),
+                    prod.getProductImages(),
+                    id
+            );
+            orderedProductDao.insertOrderedProduct(orderedProduct);
+            productDao.updateQuantity(pid, productDao.getProductQuantityById(pid) - 1);
+        }
+    }
+}

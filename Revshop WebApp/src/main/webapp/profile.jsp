@@ -150,9 +150,9 @@ if (activeUser == null) {
                         <button type="button" id="wishlist-btn" class="list-btn">
                             My Wishlist
                         </button>
-                        <button type="button" id="order-btn" class="list-btn">
+                      <a href="OrderServlet"><button type="button" id="order-btn" class="list-btn">
                             My Orders
-                        </button>
+                        </button></a>  
                         <button type="button" id="logout-btn" class="list-btn" onclick="window.open('logout?user=user', '_self')">
                             Logout
                         </button>
@@ -171,9 +171,7 @@ if (activeUser == null) {
                     <div id="wishlist" style="display: none;">
                         <%@include file="wishlist.jsp"%>
                     </div>
-                    <div id="order" style="display: none;">
-                        <%@include file="order.jsp"%>
-                    </div>
+      
                 </div>
             </div>
             <!-- End of Main Content -->

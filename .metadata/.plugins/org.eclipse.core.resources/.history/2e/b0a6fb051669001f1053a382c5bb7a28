@@ -1,0 +1,83 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.List;
+
+import com.revature.ecom.DAO.cartDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Models.cartModel;
+import com.revature.ecom.Models.productModel;
+import com.revature.ecom.Models.messageModel;
+import com.revature.ecom.Models.userModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+
+/**
+ * Servlet implementation class cartServlet
+ */
+@WebServlet("/cart")
+public class cartServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public cartServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        userModel activeUser = (userModel) session.getAttribute("activeUser");
+        if (activeUser == null) {
+            messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+            session.setAttribute("message", message);
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        cartDAO cartDao = null;
+        productDAO productDao = null;
+        try {
+            cartDao = new cartDAO(DatabaseUtil.getConnection());
+            productDao = new productDAO(DatabaseUtil.getConnection());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        List<cartModel> listOfCart = cartDao.getCartListByUserId(activeUser.getUserId());
+        float totalPrice = 0;
+        boolean isEmptyCart = (listOfCart == null || listOfCart.size() == 0);
+
+        if (!isEmptyCart) {
+            for (cartModel c : listOfCart) {
+                productModel prod = productDao.getProductsByProductId(c.getProductId());
+                c.setProduct(prod);  // Store product in cart model
+                totalPrice += c.getQuantity() * prod.getProductPriceAfterDiscount();
+            }
+        }
+
+        request.setAttribute("listOfCart", listOfCart);
+        request.setAttribute("totalPrice", totalPrice);
+        request.setAttribute("isEmptyCart", isEmptyCart);
+
+        request.getRequestDispatcher("cart.jsp").forward(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+}

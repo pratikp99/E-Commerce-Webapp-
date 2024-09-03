@@ -1,0 +1,16 @@
+package com.revature.ecom.service;
+
+import java.util.List;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+
+public interface orderService {
+    List<orderModel> getAllOrders();
+    List<orderedProductModel> getOrderedProductsByOrderId(int orderId);
+    String getUserName(int userId);
+    String getUserPhone(int userId);
+    String getUserAddress(int userId);
+    
+    // Add the updateOrderStatus method
+    void updateOrderStatus(int orderId, String status);
+}

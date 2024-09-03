@@ -1,0 +1,77 @@
+package com.revature.ecom.service;
+
+import com.revature.ecom.DAO.cartDAO;
+import com.revature.ecom.DAO.orderDAO;
+import com.revature.ecom.DAO.orderedProductDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Models.cartModel;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import com.revature.ecom.Models.productModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.Utils.OrderID;
+import com.revature.ecom.Models.userModel;
+
+import java.sql.Connection;
+import java.util.List;
+
+public class OrderService {
+
+    private final Connection connection;
+
+    public OrderService() throws ClassNotFoundException {
+        this.connection = DatabaseUtil.getConnection();
+    }
+
+    public void placeOrderFromCart(userModel user, String paymentType) throws Exception {
+        String orderId = OrderID.getOrderId();
+        String status = "Order Placed";
+
+        orderModel order = new orderModel(orderId, status, paymentType, user.getUserId());
+        orderDAO orderDao = new orderDAO(connection);
+        int orderIdGenerated = orderDao.insertOrder(order);
+
+        cartDAO cartDao = new cartDAO(connection);
+        List<cartModel> cartList = cartDao.getCartListByUserId(user.getUserId());
+        orderedProductDAO orderedProductDao = new orderedProductDAO(connection);
+        productDAO productDao = new productDAO(connection);
+
+        for (cartModel item : cartList) {
+            productModel prod = productDao.getProductsByProductId(item.getProductId());
+            orderedProductModel orderedProduct = new orderedProductModel(
+                prod.getProductName(),
+                item.getQuantity(),
+                prod.getProductPriceAfterDiscount(),
+                prod.getProductImages(),
+                orderIdGenerated
+            );
+            orderedProductDao.insertOrderedProduct(orderedProduct);
+        }
+        
+        cartDao.removeAllProduct();
+    }
+
+    public void placeOrderFromProduct(userModel user, int productId, String paymentType) throws Exception {
+        String orderId = OrderID.getOrderId();
+        String status = "Order Placed";
+
+        orderModel order = new orderModel(orderId, status, paymentType, user.getUserId());
+        orderDAO orderDao = new orderDAO(connection);
+        int orderIdGenerated = orderDao.insertOrder(order);
+
+        productDAO productDao = new productDAO(connection);
+        productModel prod = productDao.getProductsByProductId(productId);
+
+        orderedProductDAO orderedProductDao = new orderedProductDAO(connection);
+        orderedProductModel orderedProduct = new orderedProductModel(
+            prod.getProductName(),
+            1,
+            prod.getProductPriceAfterDiscount(),
+            prod.getProductImages(),
+            orderIdGenerated
+        );
+        orderedProductDao.insertOrderedProduct(orderedProduct);
+        
+        productDao.updateQuantity(productId, productDao.getProductQuantityById(productId) - 1);
+    }
+}

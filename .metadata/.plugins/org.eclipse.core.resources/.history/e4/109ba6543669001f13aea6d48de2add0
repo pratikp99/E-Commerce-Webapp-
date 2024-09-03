@@ -1,0 +1,46 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.Utils.mailMessage;
+
+@WebServlet("/updateOrder")
+public class updateOrderServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private orderService orderService;
+
+    public updateOrderServlet() {
+        super();
+        this.orderService = new OrderServiceImpl();
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            int oid = Integer.parseInt(request.getParameter("oid"));
+            String status = request.getParameter("status");
+            orderService.updateOrderStatus(oid, status);
+
+            if (status.trim().equals("Shipped") || status.trim().equals("Out For Delivery")) {
+                orderModel order = orderService.getOrderById(oid);
+                // Assuming there's a method to get user's details in orderService or userDAO.
+                String userName = orderService.getUserName(order.getUserId());
+                String userEmail = orderService.getUserEmail(order.getUserId());
+                mailMessage.orderShipped(userName, userEmail, order.getOrderId(), order.getDate().toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred while updating the order.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+        response.sendRedirect("displayOrders");
+    }
+}

@@ -1,0 +1,30 @@
+package com.revature.ecom.Servlets;
+
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.service.OrderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/vieworders")
+public class ViewOrdersServlet extends HttpServlet {
+
+    private OrderService orderService;
+
+    @Override
+    public void init() throws ServletException {
+        this.orderService = new OrderServiceImpl();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<orderModel> orderList = orderService.getAllOrders();
+        request.setAttribute("orderList", orderList);
+        request.getRequestDispatcher("display_orders.jsp").forward(request, response);
+    }
+}

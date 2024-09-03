@@ -1,0 +1,7 @@
+package com.revature.ecom.serviceImpl;
+
+import com.revature.ecom.service.orderService;
+
+public class orderServiceImpl implements orderService{
+
+}

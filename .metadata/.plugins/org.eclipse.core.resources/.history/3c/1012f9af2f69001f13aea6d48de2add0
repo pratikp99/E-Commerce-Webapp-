@@ -1,0 +1,68 @@
+package com.revature.ecom.servlets;
+
+import com.revature.ecom.DAO.orderedProductDAO;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import com.revature.ecom.Models.userModel;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.service.userService;
+import com.revature.ecom.serviceImpl.orderServiceImpl;
+import com.revature.ecom.serviceImpl.userServiceImpl;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@WebServlet("/displayOrders")
+public class displayOrdersServlet extends HttpServlet {
+    private orderService orderService;
+    private userService userService;
+    private orderedProductDAO orderedProductDAO;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // Initialize services and DAO
+        Connection con = (Connection) getServletContext().getAttribute("DBConnection");  // assuming DBConnection is set in the context
+        this.orderService = new orderServiceImpl();
+        this.userService = new userServiceImpl();
+        this.orderedProductDAO = new orderedProductDAO(con);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Get list of orders
+        List<orderModel> orderList = orderService.getAllOrders();
+
+        // Map to store user details by order ID
+        Map<Integer, userModel> userMap = new HashMap<>();
+
+        // Map to store ordered products by order ID
+        Map<Integer, List<orderedProductModel>> orderProductsMap = new HashMap<>();
+
+        // Populate maps
+        for (orderModel order : orderList) {
+            userModel user = userService.getUserById(order.getUserId());
+            userMap.put(order.getId(), user);
+
+            List<orderedProductModel> orderedProducts = orderedProductDAO.getAllOrderedProduct(order.getId());
+            orderProductsMap.put(order.getId(), orderedProducts);
+        }
+
+        // Set attributes to forward to JSP
+        request.setAttribute("orderList", orderList);
+        request.setAttribute("userMap", userMap);
+        request.setAttribute("orderProductsMap", orderProductsMap);
+
+        // Forward to JSP
+        request.getRequestDispatcher("display_orders.jsp").forward(request, response);
+    }
+}

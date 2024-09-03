@@ -1,0 +1,118 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import com.revature.ecom.Models.cartModel;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import com.revature.ecom.Models.productModel;
+import com.revature.ecom.Models.userModel;
+import com.revature.ecom.DAO.cartDAO;
+import com.revature.ecom.DAO.productDAO;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.Utils.OrderID;
+import com.revature.ecom.Utils.mailMessage;
+import com.revature.ecom.service.orderService;
+import com.revature.ecom.service.OrderServiceImpl;
+
+@WebServlet("/orders")
+public class ordersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    private orderService orderService;
+
+    public ordersServlet() {
+        super();
+        this.orderService = new OrderServiceImpl();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        userModel user = (userModel) session.getAttribute("activeUser");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        List<orderModel> orderList = orderService.getOrdersByUserId(user.getUserId());
+        session.setAttribute("orderList", orderList);
+        response.sendRedirect("orders.jsp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String from = (String) session.getAttribute("from");
+        String paymentType = request.getParameter("payementMode");
+        userModel user = (userModel) session.getAttribute("activeUser");
+        String orderId = OrderID.getOrderId();
+        String status = "Order Placed";
+
+        if ("cart".equals(from.trim())) {
+            try {
+                orderModel order = new orderModel(orderId, status, paymentType, user.getUserId());
+                int id = orderService.insertOrder(order);
+
+                cartDAO cartDao = new cartDAO(DatabaseUtil.getConnection());
+                List<cartModel> listOfCart = cartDao.getCartListByUserId(user.getUserId());
+
+                for (cartModel item : listOfCart) {
+                    productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+                    productModel prod = productDao.getProductsByProductId(item.getProductId());
+                    String prodName = prod.getProductName();
+                    int prodQty = item.getQuantity();
+                    float price = prod.getProductPriceAfterDiscount();
+                    String image = prod.getProductImages();
+
+                    orderedProductModel orderedProduct = new orderedProductModel(prodName, prodQty, price, image, id);
+                    orderService.insertOrderedProduct(orderedProduct);
+                }
+
+                session.removeAttribute("from");
+                session.removeAttribute("totalPrice");
+
+                cartDao.removeAllProduct();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if ("buy".equals(from.trim())) {
+            try {
+                int pid = (int) session.getAttribute("pid");
+                orderModel order = new orderModel(orderId, status, paymentType, user.getUserId());
+                int id = orderService.insertOrder(order);
+
+                productDAO productDao = new productDAO(DatabaseUtil.getConnection());
+                productModel prod = productDao.getProductsByProductId(pid);
+                String prodName = prod.getProductName();
+                int prodQty = 1;
+                float price = prod.getProductPriceAfterDiscount();
+                String image = prod.getProductImages();
+
+                orderedProductModel orderedProduct = new orderedProductModel(prodName, prodQty, price, image, id);
+                orderService.insertOrderedProduct(orderedProduct);
+
+                productDao.updateQuantity(pid, productDao.getProductQuantityById(pid) - 1);
+
+                session.removeAttribute("from");
+                session.removeAttribute("pid");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        session.setAttribute("order", "success");
+        mailMessage.successfullyOrderPlaced(user.getUserName(), user.getUserEmail(), orderId, new Date().toString());
+        response.sendRedirect("index.jsp");
+    }
+}

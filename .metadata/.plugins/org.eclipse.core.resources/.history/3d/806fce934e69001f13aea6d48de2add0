@@ -1,0 +1,61 @@
+package com.revature.ecom.Servlets;
+
+import java.io.IOException;
+import java.util.List;
+
+import com.revature.ecom.Models.messageModel;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.userModel;
+import com.revature.ecom.service.OrderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class OrderServlet
+ */
+@WebServlet("/orders")
+public class OrderServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private OrderService orderService;
+       
+    /**
+     * @throws ClassNotFoundException 
+     * @see HttpServlet#HttpServlet()
+     */
+    public OrderServlet() throws ClassNotFoundException {
+        super();
+        orderService = new OrderServiceImpl();
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    HttpSession session = request.getSession();
+	    userModel activeUser = (userModel) session.getAttribute("activeUser");
+
+	    if (activeUser == null) {
+	        messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+	        session.setAttribute("message", message);
+	        response.sendRedirect("login.jsp");
+	        return;
+	    }
+
+	    List<orderModel> orderList = orderService.getAllOrdersByUserId(activeUser.getUserId());
+	    request.setAttribute("orderList", orderList);
+	    request.getRequestDispatcher("myOrders.jsp").forward(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    doGet(request, response);
+	}
+}

@@ -1,0 +1,5 @@
+package com.revature.ecom.service;
+
+public interface orderService {
+
+}

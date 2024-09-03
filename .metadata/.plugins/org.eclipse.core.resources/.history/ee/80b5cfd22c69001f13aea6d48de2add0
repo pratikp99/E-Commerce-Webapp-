@@ -1,0 +1,43 @@
+package com.revature.ecom.serviceImpl;
+
+import com.revature.ecom.DAO.orderDAO;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.service.orderService;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class orderServiceImpl implements orderService {
+
+    @Override
+    public List<orderModel> getAllOrders() throws Exception {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            orderDAO orderDao = new orderDAO(conn);
+            return orderDao.getAllOrder();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Exception("Error retrieving orders", e);
+        }
+    }
+
+    @Override
+    public orderModel getOrderById(int id) throws Exception {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            orderDAO orderDao = new orderDAO(conn);
+            return orderDao.getOrderById(id);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Exception("Error retrieving order", e);
+        }
+    }
+
+    @Override
+    public void updateOrderStatus(int id, String status) throws Exception {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            orderDAO orderDao = new orderDAO(conn);
+            orderDao.updateOrderStatus(id, status);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Exception("Error updating order status", e);
+        }
+    }
+}

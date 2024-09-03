@@ -1,0 +1,57 @@
+package com.revature.ecom.serviceImpl;
+
+import java.util.List;
+import com.revature.ecom.DAO.orderDAO;
+import com.revature.ecom.DAO.orderedProductDAO;
+import com.revature.ecom.DAO.userDAO;
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import com.revature.ecom.Utils.DatabaseUtil;
+import com.revature.ecom.service.orderService;
+
+public class OrderServiceImpl implements orderService {
+    private orderDAO orderDao;
+    private orderedProductDAO orderedProductDao;
+    private userDAO userDao;
+
+    public OrderServiceImpl() {
+        try {
+            this.orderDao = new orderDAO(DatabaseUtil.getConnection());
+            this.orderedProductDao = new orderedProductDAO(DatabaseUtil.getConnection());
+            this.userDao = new userDAO(DatabaseUtil.getConnection());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<orderModel> getAllOrders() {
+        return orderDao.getAllOrder();
+    }
+
+    @Override
+    public List<orderedProductModel> getOrderedProductsByOrderId(int orderId) {
+        return orderedProductDao.getAllOrderedProduct(orderId);
+    }
+
+    @Override
+    public String getUserName(int userId) {
+        return userDao.getUserName(userId);
+    }
+
+    @Override
+    public String getUserPhone(int userId) {
+        return userDao.getUserPhone(userId);
+    }
+
+    @Override
+    public String getUserAddress(int userId) {
+        return userDao.getUserAddress(userId);
+    }
+
+    // Implement the updateOrderStatus method
+    @Override
+    public void updateOrderStatus(int orderId, String status) {
+        orderDao.updateOrderStatus(orderId, status);
+    }
+}

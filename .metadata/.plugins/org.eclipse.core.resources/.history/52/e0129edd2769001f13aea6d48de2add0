@@ -1,0 +1,99 @@
+<%@page import="com.revature.ecom.Models.messageModel"%>
+<%@page import="com.revature.ecom.Models.orderedProductModel"%>
+<%@page import="com.revature.ecom.Models.orderModel"%>
+<%@page import="java.util.List"%>
+<%@page import="com.revature.ecom.DAO.orderedProductDAO"%>
+<%@page import="com.revature.ecom.DAO.orderDAO"%>
+<%@page import="com.revature.ecom.Utils.DatabaseUtil"%>
+<%@page import="com.revature.ecom.Models.userModel"%>
+<%@page errorPage="error_exception.jsp"%>
+
+<%
+userModel u2 = (userModel) session.getAttribute("activeUser");
+if (u2 == null) {
+    messageModel message = new messageModel("You are not logged in! Login first!!", "error", "alert-danger");
+    session.setAttribute("message", message);
+    response.sendRedirect("login.jsp");
+    return;  
+}
+orderDAO orderDao = new orderDAO(DatabaseUtil.getConnection());
+orderedProductDAO ordProdDao = new orderedProductDAO(DatabaseUtil.getConnection());
+
+List<orderModel> orderList = orderDao.getAllOrderByUserId(u2.getUserId());
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="styles/custom.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <%
+        if (orderList == null || orderList.size() == 0) {
+        %>
+        <div class="text-center">
+            <img src="Images/empty-cart.png" alt="No Orders" class="img-fluid" style="max-width: 250px;">
+            <h4 class="mt-3">No Orders Found</h4>
+            <p class="lead">It looks like you haven't placed any orders yet!</p>
+        </div>
+        <%
+        } else {
+        %>
+        <div class="mb-4">
+            <h4 class="text-primary border-bottom pb-2">My Orders</h4>
+            <p class="text-muted">Here are all your recent orders. Review your past purchases and their details.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-secondary">
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Order ID</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Date and Time</th>
+                        <th>Payment Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                    for (orderModel order : orderList) {
+                        List<orderedProductModel> ordProdList = ordProdDao.getAllOrderedProduct(order.getId());
+                        for (orderedProductModel orderProduct : ordProdList) {
+                    %>
+                    <tr class="text-center">
+                        <td><img src="Product_imgs/<%=orderProduct.getImage()%>" alt="<%=orderProduct.getName()%>" class="img-thumbnail" style="max-width: 80px;"></td>
+                        <td><%=order.getOrderId()%></td>
+                        <td><%=orderProduct.getName()%></td>
+                        <td><%=orderProduct.getQuantity()%></td>
+                        <td>&#8377;<%=orderProduct.getPrice() * orderProduct.getQuantity()%></td>
+                        <td><%=order.getDate()%></td>
+                        <td><%=order.getPayementType()%></td>
+                        <td class="fw-semibold text-success"><%=order.getStatus()%></td>
+                    </tr>
+                    <%
+                        }
+                    }
+                    %>
+                </tbody>
+            </table>
+        </div>
+        <%
+        }
+        %>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+</body>
+</html>

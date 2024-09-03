@@ -1,0 +1,40 @@
+package com.revature.ecom.Servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+import com.revature.ecom.Models.orderModel;
+import com.revature.ecom.Models.orderedProductModel;
+import com.revature.ecom.service.OrderService;
+import com.revature.ecom.serviceImpl.OrderServiceImpl;
+
+@WebServlet("/viewOrders")
+public class ViewOrdersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    private OrderService orderService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        orderService = new OrderServiceImpl();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<orderModel> orderList = orderService.getAllOrders();
+        request.setAttribute("orderList", orderList);
+        request.getRequestDispatcher("display_orders.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int orderId = Integer.parseInt(request.getParameter("oid"));
+        String status = request.getParameter("status");
+        orderService.updateOrderStatus(orderId, status);
+        response.sendRedirect("viewOrders");
+    }
+}
